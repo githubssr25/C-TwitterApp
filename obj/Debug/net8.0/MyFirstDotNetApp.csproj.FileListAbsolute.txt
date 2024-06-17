@@ -1,0 +1,14 @@
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/bin/Debug/net8.0/MyFirstDotNetApp
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/bin/Debug/net8.0/MyFirstDotNetApp.deps.json
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/bin/Debug/net8.0/MyFirstDotNetApp.runtimeconfig.json
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/bin/Debug/net8.0/MyFirstDotNetApp.dll
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/bin/Debug/net8.0/MyFirstDotNetApp.pdb
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.AssemblyInfoInputs.cache
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.AssemblyInfo.cs
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.csproj.CoreCompileInputs.cache
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.dll
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/refint/MyFirstDotNetApp.dll
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.pdb
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/MyFirstDotNetApp.genruntimeconfig.cache
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/obj/Debug/net8.0/ref/MyFirstDotNetApp.dll
