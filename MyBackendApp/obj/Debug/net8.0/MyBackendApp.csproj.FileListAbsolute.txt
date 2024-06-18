@@ -5,6 +5,8 @@
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/MyBackendApp.runtimeconfig.json
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/MyBackendApp.dll
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/MyBackendApp.pdb
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/AutoMapper.dll
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/Humanizer.dll
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/bin/Debug/net8.0/Microsoft.CodeAnalysis.dll
@@ -83,6 +85,7 @@
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/MyBackendApp.AssemblyInfo.cs
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/MyBackendApp.csproj.CoreCompileInputs.cache
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/MyBackendApp.MvcApplicationPartsAssemblyInfo.cache
+/Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/MyBackendApp.sourcelink.json
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/staticwebassets.build.json
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/staticwebassets.development.json
 /Users/simrathrandhawa/Documents/GitHub/C#Attempt26-17/MyFirstDotNetApp/MyBackendApp/obj/Debug/net8.0/staticwebassets/msbuild.MyBackendApp.Microsoft.AspNetCore.StaticWebAssets.props

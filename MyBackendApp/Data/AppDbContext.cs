@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MyBackendApp.Entities;
 
 namespace MyBackendApp.Data
 {
@@ -28,62 +29,24 @@ namespace MyBackendApp.Data
 
             modelBuilder.Entity<TweetHashtags>()
                 .HasKey(th => new { th.TweetId, th.HashtagId });
+
+            // Self-referencing many-to-many relationship for followers and following
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Following)
+                .WithMany(u => u.Followers)
+                .UsingEntity(j => j.ToTable("followers_following"));
+
+            // Many-to-many relationship for user likes
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.LikedTweets)
+                .WithMany(t => t.LikedByUsers)
+                .UsingEntity(j => j.ToTable("user_likes"));
+
+            // Many-to-many relationship for user mentions
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.MentionedTweets)
+                .WithMany(t => t.MentionedUsers)
+                .UsingEntity(j => j.ToTable("user_mentions"));
         }
-    }
-
-    public class User
-    {
-        public int Id { get; set; }
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        // Other properties...
-    }
-
-    public class Tweet
-    {
-        public int Id { get; set; }
-        public string Content { get; set; } = string.Empty;
-        public int UserId { get; set; }
-        public User User { get; set; } = new User();
-        // Other properties...
-    }
-
-    public class Hashtag
-    {
-        public int Id { get; set; }
-        public string Label { get; set; } = string.Empty;
-        // Other properties...
-    }
-
-    public class FollowersFollowing
-    {
-        public int FollowerId { get; set; }
-        public User Follower { get; set; } = new User();
-        public int FollowingId { get; set; }
-        public User Following { get; set; } = new User();
-    }
-
-    public class UserLikes
-    {
-        public int UserId { get; set; }
-        public User User { get; set; } = new User();
-        public int TweetId { get; set; }
-        public Tweet Tweet { get; set; } = new Tweet();
-    }
-
-    public class UserMentions
-    {
-        public int UserId { get; set; }
-        public User User { get; set; } = new User();
-        public int TweetId { get; set; }
-        public Tweet Tweet { get; set; } = new Tweet();
-    }
-
-    public class TweetHashtags
-    {
-        public int TweetId { get; set; }
-        public Tweet Tweet { get; set; } = new Tweet();
-        public int HashtagId { get; set; }
-        public Hashtag Hashtag { get; set; } = new Hashtag();
     }
 }
