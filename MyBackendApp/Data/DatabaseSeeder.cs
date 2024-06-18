@@ -25,36 +25,42 @@ namespace MyBackendApp.Seeders
                     {
                         Credentials = new Credentials { Username = "therealmc", Password = "Password" },
                         Profile = new Profile { FirstName = "Master", LastName = "Chief", Email = "sierra117@email.com", Phone = "123-456-7890" },
+                        Joined = DateTime.UtcNow,
                         Deleted = false
                     },
                     new User
                     {
                         Credentials = new Credentials { Username = "mario", Password = "password" },
                         Profile = new Profile { FirstName = "Mario", LastName = "Mario", Email = "mario@email.com", Phone = "234-567-8901" },
+                        Joined = DateTime.UtcNow,
                         Deleted = false
                     },
                     new User
                     {
                         Credentials = new Credentials { Username = "Luigi", Password = "Password" },
                         Profile = new Profile { FirstName = "Luigi", LastName = "Mario", Email = "luigi@email.com", Phone = "345-678-9012" },
+                        Joined = DateTime.UtcNow,
                         Deleted = false
                     },
                     new User
                     {
                         Credentials = new Credentials { Username = "Nathan", Password = "Password" },
                         Profile = new Profile { FirstName = "Nathan", LastName = "Drake", Email = "nathan@email.com", Phone = "456-789-0023" },
+                        Joined = DateTime.UtcNow,
                         Deleted = false
                     },
                     new User
                     {
                         Credentials = new Credentials { Username = "Tarnished", Password = "Password" },
                         Profile = new Profile { FirstName = "The", LastName = "Tarnished", Email = "willibecometheeldenlord@email.com", Phone = "567-890-0034" },
+                        Joined = DateTime.UtcNow,
                         Deleted = false
                     },
                     new User
                     {
                         Credentials = new Credentials { Username = "DeletedUser", Password = "Password" },
                         Profile = new Profile { FirstName = "Deleted", LastName = "User", Email = "Deleted@User.com", Phone = "NULL" },
+                        Joined = DateTime.UtcNow,
                         Deleted = true
                     }
                 };
@@ -63,12 +69,13 @@ namespace MyBackendApp.Seeders
                 context.SaveChanges();
 
                 // --- Hashtags ---
+                var now = DateTime.UtcNow;
                 var hashtags = new List<Hashtag>
                 {
-                    new Hashtag { Label = "#eldenlord" },
-                    new Hashtag { Label = "#mario" },
-                    new Hashtag { Label = "#luigi" },
-                    new Hashtag { Label = "#whereiscortana" }
+                    new Hashtag { Label = "#eldenlord", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Label = "#mario", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Label = "#luigi", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Label = "#whereiscortana", FirstUsed = now, LastUsed = now }
                 };
 
                 context.Hashtags.AddRange(hashtags);

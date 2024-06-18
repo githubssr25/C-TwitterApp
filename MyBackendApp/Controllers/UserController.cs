@@ -29,11 +29,11 @@ namespace MyBackendApp.Controllers
             return await _userService.GetUserByUsernameAsync(username);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserRequestDto userRequestDto)
-        {
-            var createdUser = await _userService.CreateUserAsync(userRequestDto);
-            return CreatedAtAction(nameof(GetUserByUsername), new { username = createdUser.Username }, createdUser);
-        }
+        // [HttpPost]
+        // public async Task<IActionResult> CreateUser([FromBody] UserRequestDto userRequestDto)
+        // {
+        //     var createdUser = await _userService.CreateUserAsync(userRequestDto);
+        //     return CreatedAtAction(nameof(GetUserByUsername), new { username = createdUser.Username }, createdUser);
+        // }
     }
 }

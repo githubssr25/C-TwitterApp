@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBackendApp.Entities
 {
+    [Table("Hashtags")]
     public class Hashtag
     {
         [Key]
@@ -12,15 +13,15 @@ namespace MyBackendApp.Entities
         public long Id { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(50)")]
-        public string Label { get; set; } = string.Empty; // Initialize
+        [MaxLength(50)]
+        public string Label { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
         public DateTime FirstUsed { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Required]
         public DateTime LastUsed { get; set; }
 
-        public ICollection<Tweet> Tweets { get; set; } = new List<Tweet>(); // Initialize
+        public ICollection<Tweet> Tweets { get; set; } = new List<Tweet>();
     }
 }

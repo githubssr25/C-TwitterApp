@@ -5,36 +5,35 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBackendApp.Entities
 {
+    [Table("tweets")]
     public class Tweet
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
-       [Required]
-        public User Author { get; set; } = null!; // Marked as non-nullable
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime Posted { get; set; }
+        [Required]
+        public string Content { get; set; } = string.Empty;
 
         public bool Deleted { get; set; } = false;
 
-        
-        [Required]
-        public string Content { get; set; } = string.Empty; // Initialize
+        public long? InReplyToId { get; set; }
+        [ForeignKey(nameof(InReplyToId))]
+        public Tweet? InReplyTo { get; set; }
 
-        public Tweet? InReplyTo { get; set; } // Make nullable
+        public long? RepostOfId { get; set; }
+        [ForeignKey(nameof(RepostOfId))]
+        public Tweet? RepostOf { get; set; }
 
-        public ICollection<Tweet>? Replies { get; set; } = new List<Tweet>(); // Initialize and make nullable
+        public long? AuthorId { get; set; }
+        [ForeignKey(nameof(AuthorId))]
+        public User? Author { get; set; }
 
-        public Tweet? RepostOf { get; set; } // Make nullable
+        public ICollection<Hashtag> Hashtags { get; set; } = new List<Hashtag>();
 
-        public ICollection<Tweet>? Reposts { get; set; } = new List<Tweet>(); // Initialize and make nullable
+        public ICollection<User> MentionedUsers { get; set; } = new List<User>();
 
-        public ICollection<Hashtag>? Hashtags { get; set; } = new List<Hashtag>(); // Initialize and make nullable
-
-        public ICollection<User>? MentionedUsers { get; set; } = new List<User>(); // Initialize and make nullable
-
-        public ICollection<User>? LikedByUsers { get; set; } = new List<User>(); // Add and initialize
+        // Add the LikedByUsers property
+        public ICollection<User> LikedByUsers { get; set; } = new List<User>();
     }
 }

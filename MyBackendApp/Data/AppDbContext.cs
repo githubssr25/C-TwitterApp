@@ -34,7 +34,23 @@ namespace MyBackendApp.Data
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Following)
                 .WithMany(u => u.Followers)
-                .UsingEntity(j => j.ToTable("followers_following"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserUser",
+                    j => j
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Restrict),
+                    j => j
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("FollowerId", "FollowingId");
+                        j.ToTable("followers_following");
+                    });
 
             // Many-to-many relationship for user likes
             modelBuilder.Entity<User>()
@@ -47,6 +63,13 @@ namespace MyBackendApp.Data
                 .HasMany(u => u.MentionedTweets)
                 .WithMany(t => t.MentionedUsers)
                 .UsingEntity(j => j.ToTable("user_mentions"));
+
+            // Configure one-to-many relationship between Tweet and User
+            modelBuilder.Entity<Tweet>()
+                .HasOne(t => t.Author)
+                .WithMany(u => u.Tweets)
+                .HasForeignKey(t => t.AuthorId)
+                .OnDelete(DeleteBehavior.Restrict); // Optional: define delete behavior
         }
     }
 }

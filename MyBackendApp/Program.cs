@@ -6,6 +6,8 @@ using MyBackendApp.Data;
 using MyBackendApp.Seeders;
 using MyBackendApp.Mappers; // Ensure this is included
 using Microsoft.EntityFrameworkCore;
+using MyBackendApp.Services;
+using MyBackendApp.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,10 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register services and repositories
+builder.Services.AddScoped<IUserService, UserServiceImpl>();
+builder.Services.AddScoped<IUserRepository, UserRepository>(); // Ensure this matches your repository implementation
 
 var app = builder.Build();
 
