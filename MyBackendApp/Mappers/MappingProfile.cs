@@ -11,10 +11,14 @@ namespace MyBackendApp.Mappers
             // User mappings
             CreateMap<User, UserResponseDto>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Credentials.Username));
-            CreateMap<UserRequestDto, User>();
+
+            CreateMap<UserRequestDto, User>()
+                .ForMember(dest => dest.Credentials, opt => opt.MapFrom(src => src.Credentials))
+                .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile))
+                .ForMember(dest => dest.Joined, opt => opt.Ignore());
 
             // Profile mappings
-            CreateMap<MyBackendApp.Entities.Profile, ProfileDto>().ReverseMap();
+            CreateMap<ProfileDto, Entities.Profile>().ReverseMap(); // Fully qualify Profile
 
             // Credentials mappings
             CreateMap<Credentials, CredentialsDto>().ReverseMap();

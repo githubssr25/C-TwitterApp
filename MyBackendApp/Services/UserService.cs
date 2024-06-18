@@ -8,14 +8,13 @@ namespace MyBackendApp.Services
     {
         Task<List<UserResponseDto>> GetAllUsersAsync();
         Task<UserResponseDto> GetUserByUsernameAsync(string username);
-        Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto);
+        Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto); // Ensure async method
         List<UserResponseDto> GetAllUsers();
         UserResponseDto GetUserByUsername(string username);
         UserResponseDto UpdateUserProfile(string username, UserRequestDto userRequestDto);
         UserResponseDto DeleteUser(string username, CredentialsDto credentialsDto);
         bool CheckUsernameExists(string username);
         bool CheckUsernameAvailable(string username);
-        UserResponseDto CreateUser(UserRequestDto userRequestDto);
         void FollowUser(string username, CredentialsDto credentialsDto);
         void UnFollowUser(string username, CredentialsDto credentialsDto);
         List<TweetResponseDto> GetTweets(string username);

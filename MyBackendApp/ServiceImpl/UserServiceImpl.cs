@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -31,11 +32,36 @@ namespace MyBackendApp.Services
             return _mapper.Map<UserResponseDto>(user);
         }
 
-        public async Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto)
+        public async Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto) // Ensure method signature matches
         {
-            var user = _mapper.Map<User>(userRequestDto);
-            await _userRepository.CreateUserAsync(user);
-            return _mapper.Map<UserResponseDto>(user);
+            if (userRequestDto == null || userRequestDto.Credentials == null || userRequestDto.Profile == null)
+            {
+                throw new ArgumentException("Missing user data, credentials, or profile information.");
+            }
+
+            var credentials = userRequestDto.Credentials;
+            var existingUser = _userRepository.FindByCredentialsUsername(credentials.Username);
+
+            if (existingUser != null)
+            {
+                if (existingUser.Deleted)
+                {
+                    // Reactivate deleted user
+                    existingUser.Deleted = false;
+                    existingUser.Profile = _mapper.Map<MyBackendApp.Entities.Profile>(userRequestDto.Profile);
+                    await _userRepository.UpdateUserAsync(existingUser);
+                    return _mapper.Map<UserResponseDto>(existingUser);
+                }
+                else
+                {
+                    throw new ArgumentException("Username already taken");
+                }
+            }
+
+            var newUser = _mapper.Map<User>(userRequestDto);
+            newUser.Joined = DateTime.UtcNow;
+            await _userRepository.CreateUserAsync(newUser);
+            return _mapper.Map<UserResponseDto>(newUser);
         }
 
         public List<UserResponseDto> GetAllUsers()
@@ -80,13 +106,6 @@ namespace MyBackendApp.Services
             return user == null || user.Deleted;
         }
 
-        public UserResponseDto CreateUser(UserRequestDto userRequestDto)
-        {
-            var user = _mapper.Map<User>(userRequestDto);
-            _userRepository.Save(user);
-            return _mapper.Map<UserResponseDto>(user);
-        }
-
         public void FollowUser(string username, CredentialsDto credentialsDto)
         {
             // Implementation...
@@ -128,3 +147,4 @@ namespace MyBackendApp.Services
         }
     }
 }
+

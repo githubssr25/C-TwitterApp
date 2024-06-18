@@ -16,6 +16,8 @@ namespace MyBackendApp.Repositories
         Task<List<User>> GetAllUsersAsync();
         Task<User?> GetUserByUsernameAsync(string username);
         Task CreateUserAsync(User user);
+
+        Task UpdateUserAsync(User user); // Add this method
     }
 
     public class UserRepository : IUserRepository
@@ -65,6 +67,12 @@ namespace MyBackendApp.Repositories
         public List<User> FindAllByDeletedTrue()
         {
             return _context.Users.Where(u => u.Deleted).ToList();
+        }
+
+         public async Task UpdateUserAsync(User user) // Add this method
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
     }
 }
