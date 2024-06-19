@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MyBackendApp.Data;
@@ -88,7 +89,8 @@ namespace MyBackendApp.Seeders
                     Content = "This is some content 1 tweet1 #eldenlord #mario",
                     Deleted = false,
                     Hashtags = new List<Hashtag> { hashtags[0], hashtags[1] },
-                    MentionedUsers = new List<User> { users[0], users[1] }
+                    MentionedUsers = new List<User> { users[0], users[1] },
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet1);
                 context.SaveChanges();
@@ -99,7 +101,8 @@ namespace MyBackendApp.Seeders
                     Content = "This is some content 2 tweet2 #eldenlord #mario",
                     Deleted = false,
                     Hashtags = new List<Hashtag> { hashtags[0], hashtags[1] },
-                    InReplyTo = tweet1
+                    InReplyTo = tweet1,
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet2);
                 context.SaveChanges();
@@ -110,7 +113,8 @@ namespace MyBackendApp.Seeders
                     Content = "This is some content 3 tweet3 #luigi #whereiscortana",
                     Deleted = false,
                     Hashtags = new List<Hashtag> { hashtags[2], hashtags[3] },
-                    InReplyTo = tweet2
+                    InReplyTo = tweet2,
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet3);
                 context.SaveChanges();
@@ -120,7 +124,8 @@ namespace MyBackendApp.Seeders
                     Author = users[1],
                     Content = "This is some content 4 tweet4",
                     Deleted = false,
-                    InReplyTo = tweet3
+                    InReplyTo = tweet3,
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet4);
                 context.SaveChanges();
@@ -131,7 +136,8 @@ namespace MyBackendApp.Seeders
                     Content = "This is some content 5 tweet5",
                     Deleted = false,
                     MentionedUsers = new List<User> { users[0], users[1] },
-                    InReplyTo = tweet4
+                    InReplyTo = tweet4,
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet5);
                 context.SaveChanges();
@@ -142,7 +148,8 @@ namespace MyBackendApp.Seeders
                     Deleted = false,
                     RepostOf = tweet5,
                     MentionedUsers = new List<User> { users[0], users[1] },
-                    InReplyTo = tweet2
+                    InReplyTo = tweet2,
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet6);
                 context.SaveChanges();
@@ -152,7 +159,8 @@ namespace MyBackendApp.Seeders
                     Author = users[2],
                     Content = "This is a deleted tweet (User3) tweet7",
                     Deleted = true,
-                    MentionedUsers = new List<User> { users[0], users[1] }
+                    MentionedUsers = new List<User> { users[0], users[1] },
+                    Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(deletedTweet);
                 context.SaveChanges();
@@ -177,8 +185,12 @@ namespace MyBackendApp.Seeders
                 context.SaveChanges();
 
                 // --- List of Following ---
-                users[0].Following = new List<User> { users[1], users[2], users[3] };
-                users[0].Followers = new List<User> { users[2], users[4] };
+                users[0].Following = new List<User> { users[1], users[2], users[3], users[5] };
+                users[0].Followers = new List<User> { users[4], users[5] };
+                users[1].Following = new List<User> { users[2] };
+                users[2].Following = new List<User> { users[0] };
+                users[3].Following = new List<User> { users[0], users[1] };
+                users[4].Following = new List<User> { users[0] };
 
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
@@ -188,16 +200,11 @@ namespace MyBackendApp.Seeders
                 {
                     Author = users[1],
                     Content = "This is some content for tweet mention 1",
-                    Deleted = false
+                    Deleted = false,
+                    Posted = DateTime.UtcNow
                 };
 
                 context.Tweets.Add(mention1);
-                context.SaveChanges();
-
-                // Following
-                users[0].Following = new List<User> { users[1], users[2], users[3], users[5] };
-                users[0].Followers = new List<User> { users[4], users[5] };
-
                 context.SaveChanges();
             }
         }

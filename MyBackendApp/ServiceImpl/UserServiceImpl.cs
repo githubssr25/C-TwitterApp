@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using MyBackendApp.DTOs;
@@ -32,7 +33,7 @@ namespace MyBackendApp.Services
             return _mapper.Map<UserResponseDto>(user);
         }
 
-        public async Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto) // Ensure method signature matches
+        public async Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto)
         {
             if (userRequestDto == null || userRequestDto.Credentials == null || userRequestDto.Profile == null)
             {
@@ -48,7 +49,7 @@ namespace MyBackendApp.Services
                 {
                     // Reactivate deleted user
                     existingUser.Deleted = false;
-                    existingUser.Profile = _mapper.Map<MyBackendApp.Entities.Profile>(userRequestDto.Profile);
+                    existingUser.Profile = _mapper.Map<MyBackendApp.Entities.Profile>(userRequestDto.Profile); // Fully qualify
                     await _userRepository.UpdateUserAsync(existingUser);
                     return _mapper.Map<UserResponseDto>(existingUser);
                 }
@@ -58,93 +59,71 @@ namespace MyBackendApp.Services
                 }
             }
 
-            var newUser = _mapper.Map<User>(userRequestDto);
+            var newUser = _mapper.Map<MyBackendApp.Entities.User>(userRequestDto);
             newUser.Joined = DateTime.UtcNow;
             await _userRepository.CreateUserAsync(newUser);
             return _mapper.Map<UserResponseDto>(newUser);
         }
 
-        public List<UserResponseDto> GetAllUsers()
+
+
+        public async Task FollowUserAsync(string username, CredentialsDto credentialsDto)
         {
-            var users = _userRepository.FindAllByDeletedFalse();
-            return _mapper.Map<List<UserResponseDto>>(users);
+            var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
+            if (user == null || user.Deleted)
+                throw new ArgumentException("Invalid credentials");
+
+            var userToFollow = await _userRepository.GetUserByUsernameAsync(username);
+            if (userToFollow == null || userToFollow.Deleted)
+                throw new KeyNotFoundException("User to follow not found");
+
+            if (user.Following.Contains(userToFollow))
+                throw new InvalidOperationException("Already following this user");
+
+            user.Following.Add(userToFollow);
+            await _userRepository.UpdateUserAsync(user);
         }
 
-        public UserResponseDto GetUserByUsername(string username)
+        public async Task UnFollowUserAsync(string username, CredentialsDto credentialsDto)
         {
-            var user = _userRepository.FindByCredentialsUsername(username);
-            if (user == null) throw new KeyNotFoundException("User not found");
-            return _mapper.Map<UserResponseDto>(user);
+            var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
+            if (user == null || user.Deleted)
+                throw new ArgumentException("Invalid credentials");
+
+            var userToUnfollow = await _userRepository.GetUserByUsernameAsync(username);
+            if (userToUnfollow == null || userToUnfollow.Deleted)
+                throw new KeyNotFoundException("User to unfollow not found");
+
+            if (!user.Following.Contains(userToUnfollow))
+                throw new InvalidOperationException("Not following this user");
+
+            user.Following.Remove(userToUnfollow);
+            await _userRepository.UpdateUserAsync(user);
         }
 
-        public UserResponseDto UpdateUserProfile(string username, UserRequestDto userRequestDto)
+        public async Task<List<TweetResponseDto>> GetTweetsAsync(string username)
         {
-            var user = _userRepository.FindByCredentialsUsername(username);
-            if (user == null) throw new KeyNotFoundException("User not found");
-            _mapper.Map(userRequestDto, user);
-            _userRepository.Save(user);
-            return _mapper.Map<UserResponseDto>(user);
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
+
+            var tweets = user.Tweets.Where(t => !t.Deleted).OrderByDescending(t => t.Posted).ToList();
+            return _mapper.Map<List<TweetResponseDto>>(tweets);
         }
 
-        public UserResponseDto DeleteUser(string username, CredentialsDto credentialsDto)
+        public async Task<List<TweetResponseDto>> GetFeedAsync(string username)
         {
-            var user = _userRepository.FindByCredentialsUsername(username);
-            if (user == null) throw new KeyNotFoundException("User not found");
-            user.Deleted = true;
-            _userRepository.Save(user);
-            return _mapper.Map<UserResponseDto>(user);
-        }
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
 
-        public bool CheckUsernameExists(string username)
-        {
-            return _userRepository.FindByCredentialsUsername(username) != null;
-        }
+            var tweets = user.Tweets
+                .Where(t => !t.Deleted)
+                .Concat(user.Following.SelectMany(f => f.Tweets).Where(t => !t.Deleted))
+                .OrderByDescending(t => t.Posted)
+                .ToList();
 
-        public bool CheckUsernameAvailable(string username)
-        {
-            var user = _userRepository.FindByCredentialsUsername(username);
-            return user == null || user.Deleted;
-        }
-
-        public void FollowUser(string username, CredentialsDto credentialsDto)
-        {
-            // Implementation...
-        }
-
-        public void UnFollowUser(string username, CredentialsDto credentialsDto)
-        {
-            // Implementation...
-        }
-
-        public List<TweetResponseDto> GetTweets(string username)
-        {
-            // Implementation...
-            return null;
-        }
-
-        public List<TweetResponseDto> GetFeed(string username)
-        {
-            // Implementation...
-            return null;
-        }
-
-        public List<TweetResponseDto> GetMentions(string username)
-        {
-            // Implementation...
-            return null;
-        }
-
-        public List<UserResponseDto> GetFollowers(string username)
-        {
-            // Implementation...
-            return null;
-        }
-
-        public List<UserResponseDto> GetFollowing(string username)
-        {
-            // Implementation...
-            return null;
+            return _mapper.Map<List<TweetResponseDto>>(tweets);
         }
     }
 }
-

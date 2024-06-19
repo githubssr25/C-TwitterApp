@@ -10,32 +10,15 @@ namespace MyBackendApp.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<Hashtag> Hashtags { get; set; }
-        public DbSet<FollowersFollowing> FollowersFollowing { get; set; }
-        public DbSet<UserLikes> UserLikes { get; set; }
-        public DbSet<UserMentions> UserMentions { get; set; }
-        public DbSet<TweetHashtags> TweetHashtags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Define composite key for FollowersFollowing
-            modelBuilder.Entity<FollowersFollowing>()
-                .HasKey(ff => new { ff.FollowerId, ff.FollowingId });
-
-            modelBuilder.Entity<UserLikes>()
-                .HasKey(ul => new { ul.UserId, ul.TweetId });
-
-            modelBuilder.Entity<UserMentions>()
-                .HasKey(um => new { um.UserId, um.TweetId });
-
-            modelBuilder.Entity<TweetHashtags>()
-                .HasKey(th => new { th.TweetId, th.HashtagId });
-
-            // Self-referencing many-to-many relationship for followers and following
+            // Many-to-many relationship for followers
             modelBuilder.Entity<User>()
-                .HasMany(u => u.Following)
-                .WithMany(u => u.Followers)
+                .HasMany(u => u.Followers)
+                .WithMany(u => u.Following)
                 .UsingEntity<Dictionary<string, object>>(
-                    "UserUser",
+                    "followers_following",
                     j => j
                         .HasOne<User>()
                         .WithMany()
@@ -69,7 +52,7 @@ namespace MyBackendApp.Data
                 .HasOne(t => t.Author)
                 .WithMany(u => u.Tweets)
                 .HasForeignKey(t => t.AuthorId)
-                .OnDelete(DeleteBehavior.Restrict); // Optional: define delete behavior
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

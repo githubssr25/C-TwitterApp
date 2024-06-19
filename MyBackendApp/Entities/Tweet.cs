@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBackendApp.Entities
 {
-    [Table("tweets")]
+    [Table("tweet")]
     public class Tweet
     {
         [Key]
@@ -33,7 +33,9 @@ namespace MyBackendApp.Entities
 
         public ICollection<User> MentionedUsers { get; set; } = new List<User>();
 
-        // Add the LikedByUsers property
         public ICollection<User> LikedByUsers { get; set; } = new List<User>();
+
+        [Required]
+        public DateTime Posted { get; set; } // Add this property
     }
 }

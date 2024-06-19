@@ -8,19 +8,12 @@ namespace MyBackendApp.Services
     {
         Task<List<UserResponseDto>> GetAllUsersAsync();
         Task<UserResponseDto> GetUserByUsernameAsync(string username);
-        Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto); // Ensure async method
-        List<UserResponseDto> GetAllUsers();
-        UserResponseDto GetUserByUsername(string username);
-        UserResponseDto UpdateUserProfile(string username, UserRequestDto userRequestDto);
-        UserResponseDto DeleteUser(string username, CredentialsDto credentialsDto);
-        bool CheckUsernameExists(string username);
-        bool CheckUsernameAvailable(string username);
-        void FollowUser(string username, CredentialsDto credentialsDto);
-        void UnFollowUser(string username, CredentialsDto credentialsDto);
-        List<TweetResponseDto> GetTweets(string username);
-        List<TweetResponseDto> GetFeed(string username);
-        List<TweetResponseDto> GetMentions(string username);
-        List<UserResponseDto> GetFollowers(string username);
-        List<UserResponseDto> GetFollowing(string username);
+        Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto);
+        Task FollowUserAsync(string username, CredentialsDto credentialsDto);
+        Task UnFollowUserAsync(string username, CredentialsDto credentialsDto);
+        Task<List<TweetResponseDto>> GetTweetsAsync(string username);
+        Task<List<TweetResponseDto>> GetFeedAsync(string username);
+
+        //  Task<List<TweetResponseDto>> GetUserFeedAsync(string username); // Add this method
     }
 }
