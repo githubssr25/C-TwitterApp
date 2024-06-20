@@ -82,7 +82,7 @@ namespace MyBackendApp.Seeders
                 context.Hashtags.AddRange(hashtags);
                 context.SaveChanges();
 
-                // --- Tweets ---
+              // --- Tweets ---
                 var tweet1 = new Tweet
                 {
                     Author = users[0],
@@ -142,30 +142,123 @@ namespace MyBackendApp.Seeders
                 var tweet6 = new Tweet
                 {
                     Author = users[2],
+                    Content = "This is a repost of tweet5",
                     Deleted = false,
                     RepostOf = tweet5,
-                    InReplyTo = tweet2,
                     Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet6);
                 context.SaveChanges();
 
-                var deletedTweet = new Tweet
+                var tweet7 = new Tweet
                 {
                     Author = users[2],
-                    Content = "This is a deleted tweet (User3) tweet7",
+                    Content = "This is a deleted tweet",
                     Deleted = true,
                     Posted = DateTime.UtcNow
                 };
-                context.Tweets.Add(deletedTweet);
+                context.Tweets.Add(tweet7);
                 context.SaveChanges();
 
-                var tweets = new List<Tweet> { tweet1, tweet2, tweet3, tweet4, tweet5, tweet6, deletedTweet };
+                // New tweets as per provided queries
+                var tweet8 = new Tweet
+                {
+                    Author = users[1],
+                    Content = "This is a reply to tweet1",
+                    Deleted = false,
+                    InReplyTo = tweet1,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet8);
+                context.SaveChanges();
+
+                var tweet9 = new Tweet
+                {
+                    Author = users[1],
+                    Content = "This is a reply to tweet2",
+                    Deleted = false,
+                    InReplyTo = tweet2,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet9);
+                context.SaveChanges();
+
+                var tweet10 = new Tweet
+                {
+                    Author = users[1],
+                    Content = "This is a reply to tweet3",
+                    Deleted = false,
+                    InReplyTo = tweet3,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet10);
+                context.SaveChanges();
+
+                var tweet11 = new Tweet
+                {
+                    Author = users[3],
+                    Content = "This is a repost of tweet1",
+                    Deleted = false,
+                    RepostOf = tweet1,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet11);
+                context.SaveChanges();
+
+                var tweet12 = new Tweet
+                {
+                    Author = users[3],
+                    Content = "This is a repost of tweet2",
+                    Deleted = false,
+                    RepostOf = tweet2,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet12);
+                context.SaveChanges();
+
+                var tweet13 = new Tweet
+                {
+                    Author = users[4],
+                    Content = "This is a repost of tweet3",
+                    Deleted = false,
+                    RepostOf = tweet3,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet13);
+                context.SaveChanges();
+
+                var tweet14 = new Tweet
+                {
+                    Author = users[1],
+                    Content = "This is a reply and repost of tweet1",
+                    Deleted = false,
+                    InReplyTo = tweet1,
+                    RepostOf = tweet1,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet14);
+                context.SaveChanges();
+
+                var tweet15 = new Tweet
+                {
+                    Author = users[4],
+                    Content = "This is a reply and repost of tweet2",
+                    Deleted = false,
+                    InReplyTo = tweet2,
+                    RepostOf = tweet2,
+                    Posted = DateTime.UtcNow
+                };
+                context.Tweets.Add(tweet15);
+                context.SaveChanges();
+
+                var tweets = new List<Tweet> { tweet1, tweet2, tweet3, tweet4, tweet5, tweet6, tweet7, tweet8, tweet9, tweet10, tweet11, tweet12, tweet13, tweet14, tweet15 };
 
                 // Assign tweets to users
                 users[0].Tweets = new List<Tweet> { tweet1, tweet2 };
-                users[1].Tweets = new List<Tweet> { tweet3, tweet4 };
-                users[2].Tweets = new List<Tweet> { tweet5, tweet6 };
+                users[1].Tweets = new List<Tweet> { tweet3, tweet4, tweet8, tweet9, tweet10, tweet14 };
+                users[2].Tweets = new List<Tweet> { tweet5, tweet6, tweet7 };
+                users[3].Tweets = new List<Tweet> { tweet11, tweet12 };
+                users[4].Tweets = new List<Tweet> { tweet13, tweet15 };
 
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
