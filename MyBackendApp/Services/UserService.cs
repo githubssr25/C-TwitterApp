@@ -15,5 +15,7 @@ namespace MyBackendApp.Services
         Task<List<TweetResponseDto>> GetFeedAsync(string username);
         Task<List<TweetResponseDto>> GetMentionsAsync(string username);
         Task<List<UserResponseDto>> GetFollowersAsync(string username);
+
+         Task<List<UserResponseDto>> GetFollowingAsync(string username);
     }
 }

@@ -67,5 +67,23 @@ namespace MyBackendApp.Controllers
         {
             return await _userService.GetFollowersAsync(username);
         }
+
+        [HttpGet("{username}/following")]
+        public async Task<IActionResult> GetFollowing(string username)
+        {
+            try
+            {
+                var following = await _userService.GetFollowingAsync(username);
+                return Ok(following);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

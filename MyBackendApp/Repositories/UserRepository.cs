@@ -17,6 +17,9 @@ namespace MyBackendApp.Repositories
     void Save(User user);
     Task<List<Tweet>> GetMentionsByUserIdAsync(int userId);
     Task<List<User>> GetFollowersAsync(int userId);
+
+    Task<List<User>> GetFollowingAsync(int userId);
+
 }
 public class UserRepository : IUserRepository
 {
@@ -87,5 +90,13 @@ public class UserRepository : IUserRepository
             .Where(u => u.Following.Any(f => f.Id == userId) && !u.Deleted)
             .ToListAsync();
     }
+
+    public async Task<List<User>> GetFollowingAsync(int userId)
+{
+    return await _context.Users
+        .Where(u => u.Followers.Any(f => f.Id == userId) && !u.Deleted)
+        .ToListAsync();
+}
+
 }
 }

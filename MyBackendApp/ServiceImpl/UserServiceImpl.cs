@@ -144,5 +144,16 @@ namespace MyBackendApp.Services
             var followers = user.Followers.Where(f => !f.Deleted).ToList();
             return _mapper.Map<List<UserResponseDto>>(followers);
         }
+
+        public async Task<List<UserResponseDto>> GetFollowingAsync(string username)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
+
+            var following = user.Following.Where(f => !f.Deleted).ToList();
+            return _mapper.Map<List<UserResponseDto>>(following);
+        }
+
     }
 }
