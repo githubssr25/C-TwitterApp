@@ -13,7 +13,7 @@ namespace MyBackendApp.Services
         Task UnFollowUserAsync(string username, CredentialsDto credentialsDto);
         Task<List<TweetResponseDto>> GetTweetsAsync(string username);
         Task<List<TweetResponseDto>> GetFeedAsync(string username);
-
-        //  Task<List<TweetResponseDto>> GetUserFeedAsync(string username); // Add this method
+        Task<List<TweetResponseDto>> GetMentionsAsync(string username);
+        Task<List<UserResponseDto>> GetFollowersAsync(string username);
     }
 }

@@ -50,11 +50,22 @@ namespace MyBackendApp.Controllers
             return NoContent();
         }
 
-        
+        [HttpGet("{username}/tweets")]
+        public async Task<IEnumerable<TweetResponseDto>> GetTweets(string username)
+        {
+            return await _userService.GetTweetsAsync(username);
+        }
 
+        [HttpGet("{username}/mentions")]
+        public async Task<IEnumerable<TweetResponseDto>> GetMentions(string username)
+        {
+            return await _userService.GetMentionsAsync(username);
+        }
 
-
-
-
+        [HttpGet("{username}/followers")]
+        public async Task<IEnumerable<UserResponseDto>> GetFollowers(string username)
+        {
+            return await _userService.GetFollowersAsync(username);
+        }
     }
 }

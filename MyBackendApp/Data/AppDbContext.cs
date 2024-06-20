@@ -42,10 +42,26 @@ namespace MyBackendApp.Data
                 .UsingEntity(j => j.ToTable("user_likes"));
 
             // Many-to-many relationship for user mentions
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.MentionedTweets)
-                .WithMany(t => t.MentionedUsers)
-                .UsingEntity(j => j.ToTable("user_mentions"));
+            modelBuilder.Entity<Tweet>()
+                .HasMany(t => t.MentionedUsers)
+                .WithMany(u => u.MentionedTweets)
+                .UsingEntity<Dictionary<string, object>>(
+                    "user_mentions",
+                    j => j
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("MentionedUsersId")
+                        .OnDelete(DeleteBehavior.Restrict),
+                    j => j
+                        .HasOne<Tweet>()
+                        .WithMany()
+                        .HasForeignKey("MentionedTweetsId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("MentionedUsersId", "MentionedTweetsId");
+                        j.ToTable("user_mentions");
+                    });
 
             // Configure one-to-many relationship between Tweet and User
             modelBuilder.Entity<Tweet>()

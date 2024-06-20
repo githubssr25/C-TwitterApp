@@ -134,21 +134,6 @@ namespace MyBackendApp.Migrations
                     b.ToTable("user_likes", (string)null);
                 });
 
-            modelBuilder.Entity("TweetUser1", b =>
-                {
-                    b.Property<long>("MentionedTweetsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("MentionedUsersId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("MentionedTweetsId", "MentionedUsersId");
-
-                    b.HasIndex("MentionedUsersId");
-
-                    b.ToTable("user_mentions", (string)null);
-                });
-
             modelBuilder.Entity("followers_following", b =>
                 {
                     b.Property<long>("FollowerId")
@@ -162,6 +147,21 @@ namespace MyBackendApp.Migrations
                     b.HasIndex("FollowingId");
 
                     b.ToTable("followers_following", (string)null);
+                });
+
+            modelBuilder.Entity("user_mentions", b =>
+                {
+                    b.Property<long>("MentionedUsersId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MentionedTweetsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("MentionedUsersId", "MentionedTweetsId");
+
+                    b.HasIndex("MentionedTweetsId");
+
+                    b.ToTable("user_mentions", (string)null);
                 });
 
             modelBuilder.Entity("HashtagTweet", b =>
@@ -275,21 +275,6 @@ namespace MyBackendApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TweetUser1", b =>
-                {
-                    b.HasOne("MyBackendApp.Entities.Tweet", null)
-                        .WithMany()
-                        .HasForeignKey("MentionedTweetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyBackendApp.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("MentionedUsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("followers_following", b =>
                 {
                     b.HasOne("MyBackendApp.Entities.User", null)
@@ -302,6 +287,21 @@ namespace MyBackendApp.Migrations
                         .WithMany()
                         .HasForeignKey("FollowingId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("user_mentions", b =>
+                {
+                    b.HasOne("MyBackendApp.Entities.Tweet", null)
+                        .WithMany()
+                        .HasForeignKey("MentionedTweetsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyBackendApp.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("MentionedUsersId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

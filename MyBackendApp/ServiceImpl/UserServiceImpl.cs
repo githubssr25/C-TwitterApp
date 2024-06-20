@@ -65,8 +65,6 @@ namespace MyBackendApp.Services
             return _mapper.Map<UserResponseDto>(newUser);
         }
 
-
-
         public async Task FollowUserAsync(string username, CredentialsDto credentialsDto)
         {
             var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
@@ -124,6 +122,27 @@ namespace MyBackendApp.Services
                 .ToList();
 
             return _mapper.Map<List<TweetResponseDto>>(tweets);
+        }
+
+        public async Task<List<TweetResponseDto>> GetMentionsAsync(string username)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
+
+            var mentions = await _userRepository.GetMentionsByUserIdAsync((int)user.Id);
+            return _mapper.Map<List<TweetResponseDto>>(mentions);
+        }
+
+
+        public async Task<List<UserResponseDto>> GetFollowersAsync(string username)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
+
+            var followers = user.Followers.Where(f => !f.Deleted).ToList();
+            return _mapper.Map<List<UserResponseDto>>(followers);
         }
     }
 }

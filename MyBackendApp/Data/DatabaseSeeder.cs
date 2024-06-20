@@ -89,7 +89,6 @@ namespace MyBackendApp.Seeders
                     Content = "This is some content 1 tweet1 #eldenlord #mario",
                     Deleted = false,
                     Hashtags = new List<Hashtag> { hashtags[0], hashtags[1] },
-                    MentionedUsers = new List<User> { users[0], users[1] },
                     Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet1);
@@ -135,8 +134,6 @@ namespace MyBackendApp.Seeders
                     Author = users[2],
                     Content = "This is some content 5 tweet5",
                     Deleted = false,
-                    MentionedUsers = new List<User> { users[0], users[1] },
-                    InReplyTo = tweet4,
                     Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(tweet5);
@@ -147,7 +144,6 @@ namespace MyBackendApp.Seeders
                     Author = users[2],
                     Deleted = false,
                     RepostOf = tweet5,
-                    MentionedUsers = new List<User> { users[0], users[1] },
                     InReplyTo = tweet2,
                     Posted = DateTime.UtcNow
                 };
@@ -159,7 +155,6 @@ namespace MyBackendApp.Seeders
                     Author = users[2],
                     Content = "This is a deleted tweet (User3) tweet7",
                     Deleted = true,
-                    MentionedUsers = new List<User> { users[0], users[1] },
                     Posted = DateTime.UtcNow
                 };
                 context.Tweets.Add(deletedTweet);
@@ -195,16 +190,18 @@ namespace MyBackendApp.Seeders
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
 
-                // --- Tweet Mentions ---
-                var mention1 = new Tweet
-                {
-                    Author = users[1],
-                    Content = "This is some content for tweet mention 1",
-                    Deleted = false,
-                    Posted = DateTime.UtcNow
-                };
+                    // --- Tweet Mentions ---
+                context.Database.ExecuteSqlRaw(
+                    @"INSERT INTO user_mentions (""MentionedTweetsId"", ""MentionedUsersId"") VALUES
+                    (1, 2), -- tweet 1 mentions therealmc
+                    (1, 3), -- tweet 1 mentions mario
+                    (2, 2), -- tweet 2 mentions therealmc
+                    (3, 3), -- tweet 3 mentions mario
+                    (4, 4), -- tweet 4 mentions Nathan
+                    (5, 5), -- tweet 5 mentions Tarnished
+                    (6, 2), -- tweet 6 mentions therealmc
+                    (7, 3); -- tweet 7 mentions mario");
 
-                context.Tweets.Add(mention1);
                 context.SaveChanges();
             }
         }
