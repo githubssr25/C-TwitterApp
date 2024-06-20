@@ -87,5 +87,41 @@ namespace MyBackendApp.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+
+              [HttpPost("{id}/reply")]
+        public async Task<ActionResult<TweetResponseDto>> ReplyToTweet(long id, [FromBody] TweetRequestDto tweetRequestDto)
+        {
+            try
+            {
+                var tweet = await _tweetService.ReplyToTweetAsync(id, tweetRequestDto);
+                return Ok(tweet);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpPost("{id}/repost")]
+        public async Task<ActionResult<TweetResponseDto>> RepostTweet(long id, [FromBody] CredentialsDto credentialsDto)
+        {
+            try
+            {
+                var tweet = await _tweetService.RepostTweetAsync(id, credentialsDto);
+                return Ok(tweet);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
     }
-}
+ }

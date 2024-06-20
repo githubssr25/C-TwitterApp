@@ -52,7 +52,7 @@ namespace MyBackendApp.Services
             };
 
             // Process mentions and hashtags
-            ProcessHashtags(tweet);
+            await ProcessHashtags(tweet);
 
             var createdTweet = await _tweetRepository.CreateTweetAsync(tweet);
             return _mapper.Map<TweetResponseDto>(createdTweet);
@@ -88,21 +88,67 @@ namespace MyBackendApp.Services
             await _tweetRepository.UpdateTweetAsync(tweet);
         }
 
-        private void ProcessHashtags(Tweet tweet)
+        public async Task<TweetResponseDto> ReplyToTweetAsync(long id, TweetRequestDto tweetRequestDto)
+        {
+            var originalTweet = await _tweetRepository.GetTweetByIdAsync(id);
+            if (originalTweet == null || originalTweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+            var user = await _userRepository.GetUserByUsernameAsync(tweetRequestDto.Credentials.Username);
+            if (user == null || user.Credentials.Password != tweetRequestDto.Credentials.Password)
+                throw new UnauthorizedAccessException("Invalid credentials");
+
+            var replyTweet = new Tweet
+            {
+                Author = user,
+                Content = tweetRequestDto.Content,
+                Deleted = false,
+                Posted = DateTime.UtcNow,
+                InReplyTo = originalTweet
+            };
+
+            // Process mentions and hashtags
+            await ProcessHashtags(replyTweet);
+
+            var createdReply = await _tweetRepository.CreateTweetAsync(replyTweet);
+            return _mapper.Map<TweetResponseDto>(createdReply);
+        }
+
+        public async Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto credentialsDto)
+        {
+            var originalTweet = await _tweetRepository.GetTweetByIdAsync(id);
+            if (originalTweet == null || originalTweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+            var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
+            if (user == null || user.Credentials.Password != credentialsDto.Password)
+                throw new UnauthorizedAccessException("Invalid credentials");
+
+            var repostTweet = new Tweet
+            {
+                Author = user,
+                Deleted = false,
+                Posted = DateTime.UtcNow,
+                RepostOf = originalTweet
+            };
+
+            var createdRepost = await _tweetRepository.CreateTweetAsync(repostTweet);
+            return _mapper.Map<TweetResponseDto>(createdRepost);
+        }
+
+        private async Task ProcessHashtags(Tweet tweet)
         {
             var hashtags = ExtractHashtags(tweet.Content);
             foreach (var label in hashtags)
             {
-                var hashtag = _hashtagRepository.GetHashtagByLabelAsync(label).Result;
+                var hashtag = await _hashtagRepository.GetHashtagByLabelAsync(label);
                 if (hashtag == null)
                 {
                     hashtag = new Hashtag { Label = label, FirstUsed = DateTime.UtcNow, LastUsed = DateTime.UtcNow };
-                    _hashtagRepository.CreateHashtagAsync(hashtag).Wait();
+                    await _hashtagRepository.CreateHashtagAsync(hashtag);
                 }
                 else
                 {
                     hashtag.LastUsed = DateTime.UtcNow;
-                    _hashtagRepository.UpdateHashtagAsync(hashtag).Wait();
+                    await _hashtagRepository.UpdateHashtagAsync(hashtag);
                 }
                 tweet.Hashtags.Add(hashtag);
             }
@@ -120,6 +166,7 @@ namespace MyBackendApp.Services
         }
     }
 }
+
 
 
 
