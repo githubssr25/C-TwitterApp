@@ -10,6 +10,8 @@ namespace MyBackendApp.Repositories
     {
         Task<List<Tweet>> GetAllTweetsAsync();
         Task<Tweet?> GetTweetByIdAsync(long id);
+
+        Task<Tweet?> GetTweetWithLikesByIdAsync(long id); // Add the new method 
         Task<Tweet> CreateTweetAsync(Tweet tweet);
 
          Task UpdateTweetAsync(Tweet tweet);
@@ -41,6 +43,15 @@ namespace MyBackendApp.Repositories
                 .Include(t => t.Hashtags)
                 .FirstOrDefaultAsync(t => t.Id == id && !t.Deleted);
         }
+
+        public async Task<Tweet?> GetTweetWithLikesByIdAsync(long id)
+{
+    return await _context.Tweets
+        .Include(t => t.Author)
+        .Include(t => t.Hashtags)
+        .Include(t => t.LikedByUsers) // Include liked users
+        .FirstOrDefaultAsync(t => t.Id == id && !t.Deleted);
+}
 
         public async Task<Tweet> CreateTweetAsync(Tweet tweet)
         {

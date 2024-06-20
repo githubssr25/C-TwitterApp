@@ -14,5 +14,8 @@ namespace MyBackendApp.Services
         Task LikeTweetAsync(long id, CredentialsDto credentialsDto);
         Task<TweetResponseDto> ReplyToTweetAsync(long id, TweetRequestDto tweetRequestDto);
         Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto credentialsDto);
+
+        Task<List<HashtagResponseDto>> GetTagsByTweetIdAsync(long id);
+        Task<List<UserResponseDto>> GetLikesByTweetIdAsync(long id);
     }
 }

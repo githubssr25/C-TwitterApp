@@ -2,6 +2,7 @@ using AutoMapper;
 using MyBackendApp.DTOs;
 using MyBackendApp.Entities;
 using MyBackendApp.Repositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -15,13 +16,15 @@ namespace MyBackendApp.Services
         private readonly IUserRepository _userRepository;
         private readonly IHashtagRepository _hashtagRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<TweetServiceImpl> _logger;
 
-        public TweetServiceImpl(ITweetRepository tweetRepository, IUserRepository userRepository, IHashtagRepository hashtagRepository, IMapper mapper)
+        public TweetServiceImpl(ITweetRepository tweetRepository, IUserRepository userRepository, IHashtagRepository hashtagRepository, IMapper mapper, ILogger<TweetServiceImpl> logger)
         {
             _tweetRepository = tweetRepository;
             _userRepository = userRepository;
             _hashtagRepository = hashtagRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<TweetResponseDto>> GetAllTweetsAsync()
@@ -52,7 +55,7 @@ namespace MyBackendApp.Services
             };
 
             // Process mentions and hashtags
-            await ProcessHashtags(tweet);
+            ProcessHashtags(tweet);
 
             var createdTweet = await _tweetRepository.CreateTweetAsync(tweet);
             return _mapper.Map<TweetResponseDto>(createdTweet);
@@ -77,6 +80,7 @@ namespace MyBackendApp.Services
 
         public async Task LikeTweetAsync(long id, CredentialsDto credentialsDto)
         {
+               _logger.LogInformation("Like tweet LOGGING 153 6-20 received with ID: {Id} and credentials: Username: {Username}, Password: {Password}", id, credentialsDto?.Username, credentialsDto?.Password);
             var tweet = await _tweetRepository.GetTweetByIdAsync(id);
             if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
 
@@ -113,26 +117,86 @@ namespace MyBackendApp.Services
             return _mapper.Map<TweetResponseDto>(createdReply);
         }
 
-        public async Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto credentialsDto)
+public async Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto credentialsDto)
+{
+    _logger.LogInformation("Repost request received with ID: {Id} and credentials: Username: {Username}, Password: {Password}", id, credentialsDto?.Username, credentialsDto?.Password);
+
+    if (credentialsDto == null)
+    {
+        _logger.LogWarning("CredentialsDto is null.");
+        throw new UnauthorizedAccessException("Invalid credentials");
+    }
+
+    if (string.IsNullOrEmpty(credentialsDto.Username))
+    {
+        _logger.LogWarning("Username is missing.");
+        throw new UnauthorizedAccessException("Invalid credentials");
+    }
+
+    if (string.IsNullOrEmpty(credentialsDto.Password))
+    {
+        _logger.LogWarning("Password is missing.");
+        throw new UnauthorizedAccessException("Invalid credentials");
+    }
+
+    var originalTweet = await _tweetRepository.GetTweetByIdAsync(id);
+    if (originalTweet == null || originalTweet.Deleted)
+    {
+        _logger.LogWarning("Tweet not found or deleted for ID: {Id}", id);
+        throw new KeyNotFoundException("Tweet not found");
+    }
+
+    var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
+    if (user == null || user.Credentials.Password != credentialsDto.Password)
+    {
+        _logger.LogWarning("Invalid credentials for user: {Username}", credentialsDto.Username);
+        throw new UnauthorizedAccessException("Invalid credentials");
+    }
+
+    var repostTweet = new Tweet
+    {
+        Author = user,
+        Deleted = false,
+        Posted = DateTime.UtcNow,
+        RepostOf = originalTweet
+    };
+
+    var createdRepost = await _tweetRepository.CreateTweetAsync(repostTweet);
+    return _mapper.Map<TweetResponseDto>(createdRepost);
+}
+
+
+        public async Task<List<HashtagResponseDto>> GetTagsByTweetIdAsync(long id)
         {
-            var originalTweet = await _tweetRepository.GetTweetByIdAsync(id);
-            if (originalTweet == null || originalTweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+            var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+            if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
 
-            var user = await _userRepository.GetUserByUsernameAsync(credentialsDto.Username);
-            if (user == null || user.Credentials.Password != credentialsDto.Password)
-                throw new UnauthorizedAccessException("Invalid credentials");
-
-            var repostTweet = new Tweet
-            {
-                Author = user,
-                Deleted = false,
-                Posted = DateTime.UtcNow,
-                RepostOf = originalTweet
-            };
-
-            var createdRepost = await _tweetRepository.CreateTweetAsync(repostTweet);
-            return _mapper.Map<TweetResponseDto>(createdRepost);
+            var hashtags = _mapper.Map<List<HashtagResponseDto>>(tweet.Hashtags);
+            return hashtags;
         }
+
+      public async Task<List<UserResponseDto>> GetLikesByTweetIdAsync(long id)
+{
+    var tweet = await _tweetRepository.GetTweetWithLikesByIdAsync(id); // Use the new method
+    if (tweet == null || tweet.Deleted)
+    {
+        _logger.LogWarning("Tweet not found or is deleted: {TweetId}", id);
+        throw new KeyNotFoundException("Tweet not found");
+    }
+
+    _logger.LogInformation("Fetched tweet: {TweetId} with likes count: {LikesCount}", tweet.Id, tweet.LikedByUsers.Count);
+
+    var activeUsers = tweet.LikedByUsers
+        .Where(user => !user.Deleted)
+        .ToList();
+
+    _logger.LogInformation("Active users who liked the tweet: {UserCount}", activeUsers.Count);
+
+    return _mapper.Map<List<UserResponseDto>>(activeUsers);
+}
+
+
+
 
         private async Task ProcessHashtags(Tweet tweet)
         {

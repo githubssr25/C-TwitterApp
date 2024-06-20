@@ -10,13 +10,14 @@ namespace MyBackendApp.Controllers
     [ApiController]
     public class TweetController : ControllerBase
     {
-        private readonly ITweetService _tweetService;
+    private readonly ITweetService _tweetService;
+    private readonly ILogger<TweetController> _logger;
 
-        public TweetController(ITweetService tweetService)
-        {
-            _tweetService = tweetService;
-        }
-
+    public TweetController(ITweetService tweetService, ILogger<TweetController> logger)
+    {
+        _tweetService = tweetService;
+        _logger = logger;
+    }
         [HttpGet]
         public async Task<ActionResult<List<TweetResponseDto>>> GetAllTweets()
         {
@@ -109,6 +110,9 @@ namespace MyBackendApp.Controllers
         [HttpPost("{id}/repost")]
         public async Task<ActionResult<TweetResponseDto>> RepostTweet(long id, [FromBody] CredentialsDto credentialsDto)
         {
+            // Log the received credentials
+            _logger.LogInformation("Received repost request with ID: {Id} and credentials: Username: {Username}, Password: {Password}", id, credentialsDto?.Username, credentialsDto?.Password);
+
             try
             {
                 var tweet = await _tweetService.RepostTweetAsync(id, credentialsDto);
@@ -123,5 +127,33 @@ namespace MyBackendApp.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+
+         [HttpGet("{id}/tags")]
+        public async Task<ActionResult<List<HashtagResponseDto>>> GetTagsByTweetId(long id)
+        {
+            try
+            {
+                var tags = await _tweetService.GetTagsByTweetIdAsync(id);
+                return Ok(tags);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/likes")]
+        public async Task<ActionResult<List<UserResponseDto>>> GetLikesByTweetId(long id)
+        {
+            try
+            {
+                var likes = await _tweetService.GetLikesByTweetIdAsync(id);
+                return Ok(likes);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
- }
+}
