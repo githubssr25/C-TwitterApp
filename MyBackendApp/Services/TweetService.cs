@@ -10,5 +10,8 @@ namespace MyBackendApp.Services
         Task<List<TweetResponseDto>> GetAllTweetsAsync();
         Task<TweetResponseDto?> GetTweetByIdAsync(long id);
         Task<TweetResponseDto> CreateTweetAsync(TweetRequestDto tweetRequestDto);
+
+        Task<TweetResponseDto> DeleteTweetAsync(long id, CredentialsDto credentialsDto);
+        Task LikeTweetAsync(long id, CredentialsDto credentialsDto);
     }
 }

@@ -11,9 +11,11 @@ namespace MyBackendApp.Repositories
         Task<List<Tweet>> GetAllTweetsAsync();
         Task<Tweet?> GetTweetByIdAsync(long id);
         Task<Tweet> CreateTweetAsync(Tweet tweet);
+
+         Task UpdateTweetAsync(Tweet tweet);
     }
 
-    public class TweetRepository : ITweetRepository
+     public class TweetRepository : ITweetRepository
     {
         private readonly AppDbContext _context;
 
@@ -26,6 +28,7 @@ namespace MyBackendApp.Repositories
         {
             return await _context.Tweets
                 .Include(t => t.Author)
+                .Include(t => t.Hashtags)
                 .Where(t => !t.Deleted)
                 .OrderByDescending(t => t.Posted)
                 .ToListAsync();
@@ -35,6 +38,7 @@ namespace MyBackendApp.Repositories
         {
             return await _context.Tweets
                 .Include(t => t.Author)
+                .Include(t => t.Hashtags)
                 .FirstOrDefaultAsync(t => t.Id == id && !t.Deleted);
         }
 
@@ -43,6 +47,12 @@ namespace MyBackendApp.Repositories
             _context.Tweets.Add(tweet);
             await _context.SaveChangesAsync();
             return tweet;
+        }
+
+        public async Task UpdateTweetAsync(Tweet tweet)
+        {
+            _context.Tweets.Update(tweet);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -264,21 +264,22 @@ namespace MyBackendApp.Seeders
                 context.SaveChanges();
 
                 // --- List of Liked Tweets ---
-                users[0].LikedTweets = new List<Tweet> { tweet5, tweet6 };
-                users[1].LikedTweets = new List<Tweet> { tweet1, tweet2 };
-                users[2].LikedTweets = new List<Tweet> { tweet3, tweet4 };
-                users[5].LikedTweets = new List<Tweet> { tweet3, tweet4 };
+                users[1].LikedTweets = new List<Tweet> { tweet5, tweet6 };
+                users[2].LikedTweets = new List<Tweet> { tweet1, tweet2 };
+                users[3].LikedTweets = new List<Tweet> { tweet3, tweet4 };
+                users[6].LikedTweets = new List<Tweet> { tweet3, tweet4 };
 
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
 
-                // --- List of Following ---
-                users[0].Following = new List<User> { users[1], users[2], users[3], users[5] };
-                users[0].Followers = new List<User> { users[4], users[5] };
-                users[1].Following = new List<User> { users[2] };
-                users[2].Following = new List<User> { users[0] };
-                users[3].Following = new List<User> { users[0], users[1] };
-                users[4].Following = new List<User> { users[0] };
+                // --- List of Following i edited this becasue there is no userID1 have to shift up prob why some of tehse seeder values dont work---
+                users[1].Following = new List<User> { users[2], users[3], users[4], users[6] };
+                users[1].Followers = new List<User> { users[5], users[6] };
+                users[2].Following = new List<User> { users[3] };
+                users[3].Following = new List<User> { users[1] };
+                users[4].Following = new List<User> { users[1], users[2] };
+                users[5].Following = new List<User> { users[1] };
+
 
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
