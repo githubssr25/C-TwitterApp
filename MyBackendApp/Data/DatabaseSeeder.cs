@@ -71,14 +71,13 @@ namespace MyBackendApp.Seeders
 
                 // --- Hashtags ---
                 var now = DateTime.UtcNow;
-               var hashtags = new List<Hashtag>
-        {
-            new Hashtag { Id = 2, Label = "#eldenlord", FirstUsed = now, LastUsed = now },
-            new Hashtag { Id = 3, Label = "#mario", FirstUsed = now, LastUsed = now },
-            new Hashtag { Id = 4, Label = "#luigi", FirstUsed = now, LastUsed = now },
-            new Hashtag { Id = 5, Label = "#whereiscortana", FirstUsed = now, LastUsed = now }
-        };
-
+                var hashtags = new List<Hashtag>
+                {
+                    new Hashtag { Id = 2, Label = "#eldenlord", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Id = 3, Label = "#mario", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Id = 4, Label = "#luigi", FirstUsed = now, LastUsed = now },
+                    new Hashtag { Id = 5, Label = "#whereiscortana", FirstUsed = now, LastUsed = now }
+                };
 
                 context.Hashtags.AddRange(hashtags);
                 context.SaveChanges();
@@ -295,6 +294,16 @@ namespace MyBackendApp.Seeders
                     (5, 5), -- tweet 5 mentions Tarnished
                     (6, 2), -- tweet 6 mentions therealmc
                     (7, 3); -- tweet 7 mentions mario");
+
+                // --- Hashtag-Tweet Relationships ---
+                context.Database.ExecuteSqlRaw(
+                    @"INSERT INTO HashtagTweet (""HashtagsId"", ""TweetsId"") VALUES
+                    (2, 1), -- #eldenlord in tweet1
+                    (2, 2), -- #eldenlord in tweet2
+                    (3, 1), -- #mario in tweet1
+                    (3, 2), -- #mario in tweet2
+                    (4, 3), -- #luigi in tweet3
+                    (5, 3); -- #whereiscortana in tweet3");
 
                 context.SaveChanges();
             }

@@ -24,11 +24,18 @@ namespace MyBackendApp.Controllers
             return Ok(hashtags);
         }
 
-        [HttpGet("{label}")]
+       [HttpGet("{label}")]
         public async Task<ActionResult<List<TweetResponseDto>>> GetTweetsByHashtag(string label)
         {
-            var tweets = await _hashtagService.GetTweetsByHashtagAsync(label);
-            return Ok(tweets);
+            try
+            {
+                var tweets = await _hashtagService.GetTweetsByHashtagAsync(label);
+                return Ok(tweets);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

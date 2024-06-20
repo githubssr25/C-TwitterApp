@@ -23,20 +23,30 @@ namespace MyBackendApp.Services
             return _mapper.Map<List<HashtagResponseDto>>(hashtags);
         }
 
-        public async Task<List<TweetResponseDto>> GetTweetsByHashtagAsync(string label)
+         public async Task<List<TweetResponseDto>> GetTweetsByHashtagAsync(string label)
         {
-            var tweets = await _hashtagRepository.GetTweetsByHashtagAsync(label);
-            if (tweets == null || tweets.Count == 0)
+            // Normalize the label to include the "#" prefix if not already present
+            string normalizedLabel = label.StartsWith("#") ? label : "#" + label;
+
+            var hashtag = await _hashtagRepository.GetHashtagByLabelAsync(normalizedLabel);
+            if (hashtag == null)
             {
                 throw new KeyNotFoundException("Hashtag not found");
             }
+
+            // Filter tweets to exclude deleted ones and sort by posted date
+            var tweets = hashtag.Tweets
+                .Where(tweet => !tweet.Deleted)
+                .OrderByDescending(tweet => tweet.Posted)
+                .ToList();
 
             return _mapper.Map<List<TweetResponseDto>>(tweets);
         }
 
         public async Task<bool> CheckHashtagExistsAsync(string label)
         {
-            return await _hashtagRepository.CheckHashtagExistsAsync(label);
+            string normalizedLabel = label.StartsWith("#") ? label : "#" + label;
+            return await _hashtagRepository.CheckHashtagExistsAsync(normalizedLabel);
         }
     }
-}
+    }
