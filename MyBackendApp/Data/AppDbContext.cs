@@ -63,6 +63,28 @@ namespace MyBackendApp.Data
                         j.ToTable("user_mentions");
                     });
 
+            // Many-to-many relationship for hashtags
+            modelBuilder.Entity<Tweet>()
+                .HasMany(t => t.Hashtags)
+                .WithMany(h => h.Tweets)
+                .UsingEntity<Dictionary<string, object>>(
+                    "HashtagTweet",
+                    j => j
+                        .HasOne<Hashtag>()
+                        .WithMany()
+                        .HasForeignKey("HashtagsId")
+                        .OnDelete(DeleteBehavior.Restrict),
+                    j => j
+                        .HasOne<Tweet>()
+                        .WithMany()
+                        .HasForeignKey("TweetsId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("HashtagsId", "TweetsId");
+                        j.ToTable("HashtagTweet");
+                    });
+
             // Configure one-to-many relationship between Tweet and User
             modelBuilder.Entity<Tweet>()
                 .HasOne(t => t.Author)

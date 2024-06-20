@@ -71,18 +71,19 @@ namespace MyBackendApp.Seeders
 
                 // --- Hashtags ---
                 var now = DateTime.UtcNow;
-                var hashtags = new List<Hashtag>
-                {
-                    new Hashtag { Label = "#eldenlord", FirstUsed = now, LastUsed = now },
-                    new Hashtag { Label = "#mario", FirstUsed = now, LastUsed = now },
-                    new Hashtag { Label = "#luigi", FirstUsed = now, LastUsed = now },
-                    new Hashtag { Label = "#whereiscortana", FirstUsed = now, LastUsed = now }
-                };
+               var hashtags = new List<Hashtag>
+        {
+            new Hashtag { Id = 2, Label = "#eldenlord", FirstUsed = now, LastUsed = now },
+            new Hashtag { Id = 3, Label = "#mario", FirstUsed = now, LastUsed = now },
+            new Hashtag { Id = 4, Label = "#luigi", FirstUsed = now, LastUsed = now },
+            new Hashtag { Id = 5, Label = "#whereiscortana", FirstUsed = now, LastUsed = now }
+        };
+
 
                 context.Hashtags.AddRange(hashtags);
                 context.SaveChanges();
 
-              // --- Tweets ---
+                // --- Tweets ---
                 var tweet1 = new Tweet
                 {
                     Author = users[0],
@@ -283,7 +284,7 @@ namespace MyBackendApp.Seeders
                 context.Users.UpdateRange(users);
                 context.SaveChanges();
 
-                    // --- Tweet Mentions ---
+                // --- Tweet Mentions ---
                 context.Database.ExecuteSqlRaw(
                     @"INSERT INTO user_mentions (""MentionedTweetsId"", ""MentionedUsersId"") VALUES
                     (1, 2), -- tweet 1 mentions therealmc
