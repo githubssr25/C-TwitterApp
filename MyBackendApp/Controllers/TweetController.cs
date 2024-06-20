@@ -183,5 +183,34 @@ namespace MyBackendApp.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet("{id}/reposts")]
+        public async Task<ActionResult<List<TweetResponseDto>>> GetRepostsByTweetId(long id)
+        {
+            try
+            {
+                var reposts = await _tweetService.GetRepostsByTweetIdAsync(id);
+                return Ok(reposts);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/mentions")]
+        public async Task<ActionResult<List<UserResponseDto>>> GetMentionsByTweetId(long id)
+        {
+            try
+            {
+                var mentions = await _tweetService.GetMentionsByTweetIdAsync(id);
+                return Ok(mentions);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
     }
 }

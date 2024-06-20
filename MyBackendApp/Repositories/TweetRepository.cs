@@ -8,15 +8,16 @@ namespace MyBackendApp.Repositories
 {
     public interface ITweetRepository
     {
-        Task<List<Tweet>> GetAllTweetsAsync();
-        Task<Tweet?> GetTweetByIdAsync(long id);
+   Task<List<Tweet>> GetAllTweetsAsync();
+    Task<Tweet?> GetTweetByIdAsync(long id);
+    Task<List<Tweet>> GetRepliesByTweetIdAsync(long id);
+    Task<Tweet?> GetTweetWithLikesByIdAsync(long id);
+    Task<Tweet> CreateTweetAsync(Tweet tweet);
+    Task UpdateTweetAsync(Tweet tweet);
+    Task<List<Tweet>> GetRepostsByTweetIdAsync(long id);
 
-        Task<List<Tweet>> GetRepliesByTweetIdAsync(long id);
+     Task<List<User>> GetMentionsByTweetIdAsync(long id); // Add this method
 
-        Task<Tweet?> GetTweetWithLikesByIdAsync(long id); // Add the new method 
-        Task<Tweet> CreateTweetAsync(Tweet tweet);
-
-         Task UpdateTweetAsync(Tweet tweet);
     }
 
      public class TweetRepository : ITweetRepository
@@ -76,5 +77,28 @@ namespace MyBackendApp.Repositories
                 .Where(t => t.InReplyTo.Id == id && !t.Deleted)
                 .ToListAsync();
         }
+
+        public async Task<List<Tweet>> GetRepostsByTweetIdAsync(long id)
+        {
+            return await _context.Tweets
+                .Include(t => t.Author)
+                .Include(t => t.Hashtags)
+                .Where(t => t.RepostOf.Id == id && !t.Deleted)
+                .ToListAsync();
+        }
+
+   public async Task<List<User>> GetMentionsByTweetIdAsync(long id)
+{
+    var mentionedUsers = await _context.Users
+        .FromSqlRaw(@"
+            SELECT u.*
+            FROM ""user_account"" u
+            INNER JOIN ""user_mentions"" um ON u.""Id"" = um.""MentionedUsersId""
+            WHERE um.""MentionedTweetsId"" = {0} AND u.""Deleted"" = false", id)
+        .ToListAsync();
+
+    return mentionedUsers;
+}
+
     }
 }

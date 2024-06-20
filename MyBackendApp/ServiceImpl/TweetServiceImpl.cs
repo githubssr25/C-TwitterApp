@@ -273,9 +273,52 @@ public async Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto cre
 
             return _mapper.Map<List<TweetResponseDto>>(activeReplies);
         }
+
+    public async Task<List<TweetResponseDto>> GetRepostsByTweetIdAsync(long id)
+{
+    var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+    if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+    var reposts = await _tweetRepository.GetRepostsByTweetIdAsync(id);
+    var activeReposts = reposts.Where(repost => !repost.Deleted).ToList();
+
+    return _mapper.Map<List<TweetResponseDto>>(activeReposts);
+}
+
+public async Task<List<UserResponseDto>> GetMentionsByTweetIdAsync(long id)
+    {
+        var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+        if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+        var mentionedUsers = await _tweetRepository.GetMentionsByTweetIdAsync(id);
+        return _mapper.Map<List<UserResponseDto>>(mentionedUsers);
+    }
     }
 }
 
+//      public async Task<List<UserResponseDto>> GetMentionsByTweetIdAsync(long id)
+//     {
+//         var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+//         if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+//         var mentionedUsers = await _tweetRepository.GetMentionsByTweetIdAsync(id);
+//         return _mapper.Map<List<UserResponseDto>>(mentionedUsers);
+//     }
+//     }
+// }
+// private List<string> ExtractMentions(string content)
+// {
+//     var mentions = new List<string>();
+//     var matches = Regex.Matches(content, @"@\w+");
+//     foreach (Match match in matches)
+//     {
+//         mentions.Add(match.Value.TrimStart('@'));
+//     }
+//     return mentions;
+// }
+
+// }
+//}
 
 
 

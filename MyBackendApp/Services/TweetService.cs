@@ -20,5 +20,8 @@ namespace MyBackendApp.Services
 
           Task<List<TweetResponseDto>> GetTweetContextByIdAsync(long id);
     Task<List<TweetResponseDto>> GetRepliesByTweetIdAsync(long id);
+
+        Task<List<TweetResponseDto>> GetRepostsByTweetIdAsync(long id);
+    Task<List<UserResponseDto>> GetMentionsByTweetIdAsync(long id);
     }
 }
