@@ -10,14 +10,14 @@ namespace MyBackendApp.Controllers
     [ApiController]
     public class TweetController : ControllerBase
     {
-    private readonly ITweetService _tweetService;
-    private readonly ILogger<TweetController> _logger;
+        private readonly ITweetService _tweetService;
+        private readonly ILogger<TweetController> _logger;
 
-    public TweetController(ITweetService tweetService, ILogger<TweetController> logger)
-    {
-        _tweetService = tweetService;
-        _logger = logger;
-    }
+        public TweetController(ITweetService tweetService, ILogger<TweetController> logger)
+        {
+            _tweetService = tweetService;
+            _logger = logger;
+        }
         [HttpGet]
         public async Task<ActionResult<List<TweetResponseDto>>> GetAllTweets()
         {
@@ -89,7 +89,7 @@ namespace MyBackendApp.Controllers
             }
         }
 
-              [HttpPost("{id}/reply")]
+        [HttpPost("{id}/reply")]
         public async Task<ActionResult<TweetResponseDto>> ReplyToTweet(long id, [FromBody] TweetRequestDto tweetRequestDto)
         {
             try
@@ -128,7 +128,7 @@ namespace MyBackendApp.Controllers
             }
         }
 
-         [HttpGet("{id}/tags")]
+        [HttpGet("{id}/tags")]
         public async Task<ActionResult<List<HashtagResponseDto>>> GetTagsByTweetId(long id)
         {
             try
@@ -149,6 +149,34 @@ namespace MyBackendApp.Controllers
             {
                 var likes = await _tweetService.GetLikesByTweetIdAsync(id);
                 return Ok(likes);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/context")]
+        public async Task<ActionResult<List<TweetResponseDto>>> GetTweetContextById(long id)
+        {
+            try
+            {
+                var context = await _tweetService.GetTweetContextByIdAsync(id);
+                return Ok(context);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/replies")]
+        public async Task<ActionResult<List<TweetResponseDto>>> GetRepliesByTweetId(long id)
+        {
+            try
+            {
+                var replies = await _tweetService.GetRepliesByTweetIdAsync(id);
+                return Ok(replies);
             }
             catch (KeyNotFoundException ex)
             {

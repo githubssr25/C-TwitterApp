@@ -228,6 +228,51 @@ public async Task<TweetResponseDto> RepostTweetAsync(long id, CredentialsDto cre
             }
             return hashtags;
         }
+
+        public async Task<List<TweetResponseDto>> GetTweetContextByIdAsync(long id)
+        {
+            var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+            if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+            var contextTweets = new List<Tweet>();
+            var currentTweet = tweet;
+
+            // Get the before context
+            while (currentTweet.InReplyTo != null && !currentTweet.InReplyTo.Deleted)
+            {
+                contextTweets.Add(currentTweet.InReplyTo);
+                currentTweet = currentTweet.InReplyTo;
+            }
+
+            // Get the after context
+            await GetAfterContext(tweet, contextTweets);
+
+            return _mapper.Map<List<TweetResponseDto>>(contextTweets);
+        }
+
+        private async Task GetAfterContext(Tweet tweet, List<Tweet> contextTweets)
+        {
+            var replies = await _tweetRepository.GetRepliesByTweetIdAsync(tweet.Id);
+            foreach (var reply in replies)
+            {
+                if (!reply.Deleted)
+                {
+                    contextTweets.Add(reply);
+                    await GetAfterContext(reply, contextTweets);
+                }
+            }
+        }
+
+        public async Task<List<TweetResponseDto>> GetRepliesByTweetIdAsync(long id)
+        {
+            var tweet = await _tweetRepository.GetTweetByIdAsync(id);
+            if (tweet == null || tweet.Deleted) throw new KeyNotFoundException("Tweet not found");
+
+            var replies = await _tweetRepository.GetRepliesByTweetIdAsync(id);
+            var activeReplies = replies.Where(reply => !reply.Deleted).ToList();
+
+            return _mapper.Map<List<TweetResponseDto>>(activeReplies);
+        }
     }
 }
 

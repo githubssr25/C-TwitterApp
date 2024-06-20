@@ -11,6 +11,8 @@ namespace MyBackendApp.Repositories
         Task<List<Tweet>> GetAllTweetsAsync();
         Task<Tweet?> GetTweetByIdAsync(long id);
 
+        Task<List<Tweet>> GetRepliesByTweetIdAsync(long id);
+
         Task<Tweet?> GetTweetWithLikesByIdAsync(long id); // Add the new method 
         Task<Tweet> CreateTweetAsync(Tweet tweet);
 
@@ -64,6 +66,15 @@ namespace MyBackendApp.Repositories
         {
             _context.Tweets.Update(tweet);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Tweet>> GetRepliesByTweetIdAsync(long id)
+        {
+            return await _context.Tweets
+                .Include(t => t.Author)
+                .Include(t => t.Hashtags)
+                .Where(t => t.InReplyTo.Id == id && !t.Deleted)
+                .ToListAsync();
         }
     }
 }
