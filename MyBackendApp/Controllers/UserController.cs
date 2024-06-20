@@ -85,5 +85,12 @@ namespace MyBackendApp.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("{username}/feed")]
+        public async Task<IActionResult> GetFeed(string username)
+        {
+            var feed = await _userService.GetFeedAsync(username);
+            return Ok(feed);
+        }
     }
 }

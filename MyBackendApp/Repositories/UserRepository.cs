@@ -20,6 +20,8 @@ namespace MyBackendApp.Repositories
 
     Task<List<User>> GetFollowingAsync(int userId);
 
+         Task<List<Tweet>> GetFeedByUserIdAsync(int userId);
+
 }
 public class UserRepository : IUserRepository
 {
@@ -97,6 +99,28 @@ public class UserRepository : IUserRepository
         .Where(u => u.Followers.Any(f => f.Id == userId) && !u.Deleted)
         .ToListAsync();
 }
+
+    public async Task<List<Tweet>> GetFeedByUserIdAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Tweets)
+                .Include(u => u.Following)
+                .ThenInclude(f => f.Tweets)
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.Deleted);
+
+            if (user == null)
+            {
+                return new List<Tweet>();
+            }
+
+            var feed = user.Tweets
+                .Concat(user.Following.SelectMany(f => f.Tweets))
+                .Where(t => !t.Deleted)
+                .OrderByDescending(t => t.Posted)
+                .ToList();
+
+            return feed;
+        }
 
 }
 }

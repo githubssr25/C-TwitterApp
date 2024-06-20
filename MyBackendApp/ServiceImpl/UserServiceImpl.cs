@@ -109,20 +109,20 @@ namespace MyBackendApp.Services
             return _mapper.Map<List<TweetResponseDto>>(tweets);
         }
 
-        public async Task<List<TweetResponseDto>> GetFeedAsync(string username)
-        {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
-            if (user == null || user.Deleted)
-                throw new KeyNotFoundException("User not found");
+        // public async Task<List<TweetResponseDto>> GetFeedAsync(string username)
+        // {
+        //     var user = await _userRepository.GetUserByUsernameAsync(username);
+        //     if (user == null || user.Deleted)
+        //         throw new KeyNotFoundException("User not found");
 
-            var tweets = user.Tweets
-                .Where(t => !t.Deleted)
-                .Concat(user.Following.SelectMany(f => f.Tweets).Where(t => !t.Deleted))
-                .OrderByDescending(t => t.Posted)
-                .ToList();
+        //     var tweets = user.Tweets
+        //         .Where(t => !t.Deleted)
+        //         .Concat(user.Following.SelectMany(f => f.Tweets).Where(t => !t.Deleted))
+        //         .OrderByDescending(t => t.Posted)
+        //         .ToList();
 
-            return _mapper.Map<List<TweetResponseDto>>(tweets);
-        }
+        //     return _mapper.Map<List<TweetResponseDto>>(tweets);
+        // }
 
         public async Task<List<TweetResponseDto>> GetMentionsAsync(string username)
         {
@@ -153,6 +153,16 @@ namespace MyBackendApp.Services
 
             var following = user.Following.Where(f => !f.Deleted).ToList();
             return _mapper.Map<List<UserResponseDto>>(following);
+        }
+
+            public async Task<List<TweetResponseDto>> GetFeedAsync(string username)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null || user.Deleted)
+                throw new KeyNotFoundException("User not found");
+
+            var feed = await _userRepository.GetFeedByUserIdAsync((int)user.Id);
+            return _mapper.Map<List<TweetResponseDto>>(feed);
         }
 
     }
