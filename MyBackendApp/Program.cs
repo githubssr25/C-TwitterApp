@@ -20,8 +20,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register services and repositories
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // Ensure this matches your repository implementation
+builder.Services.AddScoped<ITweetRepository, TweetRepository>();
 builder.Services.AddScoped<IHashtagService, HashtagServiceImpl>();
 builder.Services.AddScoped<IHashtagRepository, HashtagRepository>();
+builder.Services.AddScoped<ITweetService, TweetServiceImpl>();
 
 
 var app = builder.Build();

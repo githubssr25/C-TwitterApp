@@ -26,7 +26,9 @@ namespace MyBackendApp.Mappers
 
             // Tweet mappings
             CreateMap<Tweet, TweetResponseDto>()
-                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))
+                .ForMember(dest => dest.InReplyTo, opt => opt.MapFrom(src => src.InReplyTo))
+                .ForMember(dest => dest.RepostOf, opt => opt.MapFrom(src => src.RepostOf));
 
             // Hashtag mappings
             CreateMap<Hashtag, HashtagResponseDto>();

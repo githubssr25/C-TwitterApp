@@ -1,0 +1,14 @@
+using MyBackendApp.DTOs;
+using MyBackendApp.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace MyBackendApp.Services
+{
+    public interface ITweetService
+    {
+        Task<List<TweetResponseDto>> GetAllTweetsAsync();
+        Task<TweetResponseDto?> GetTweetByIdAsync(long id);
+        Task<TweetResponseDto> CreateTweetAsync(TweetRequestDto tweetRequestDto);
+    }
+}
