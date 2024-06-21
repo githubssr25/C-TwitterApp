@@ -3,6 +3,8 @@ using MyBackendApp.DTOs;
 using MyBackendApp.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
+
 
 namespace MyBackendApp.Controllers
 {
@@ -42,6 +44,7 @@ namespace MyBackendApp.Controllers
         [HttpPost]
         public async Task<ActionResult<TweetResponseDto>> CreateTweet([FromBody] TweetRequestDto tweetRequestDto)
         {
+            
             try
             {
                 var tweet = await _tweetService.CreateTweetAsync(tweetRequestDto);
@@ -107,10 +110,42 @@ namespace MyBackendApp.Controllers
             }
         }
 
-        [HttpPost("{id}/repost")]
-        public async Task<ActionResult<TweetResponseDto>> RepostTweet(long id, [FromBody] CredentialsDto credentialsDto)
+       [HttpPost("{id}/repost")]
+        public async Task<ActionResult<TweetResponseDto>> RepostTweet(long id)
         {
-            // Log the received credentials
+            string body;
+            using (var reader = new System.IO.StreamReader(Request.Body))
+            {
+                body = await reader.ReadToEndAsync();
+                _logger.LogInformation("Received request body: {Body}", body);
+            }
+
+            if (string.IsNullOrEmpty(body))
+            {
+                _logger.LogWarning("Request body is empty.");
+                return BadRequest("Invalid request body.");
+            }
+
+            CredentialsDto credentialsDto;
+            try
+            {
+                credentialsDto = JsonSerializer.Deserialize<CredentialsDto>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogError(ex, "Error deserializing request body.");
+                return BadRequest("Invalid request body.");
+            }
+
+            // Log the received credentials object
+            LogObject(credentialsDto);
+
+            if (credentialsDto == null)
+            {
+                _logger.LogWarning("CredentialsDto is null.");
+                return BadRequest("Invalid request body.");
+            }
+
             _logger.LogInformation("Received repost request with ID: {Id} and credentials: Username: {Username}, Password: {Password}", id, credentialsDto?.Username, credentialsDto?.Password);
 
             try
@@ -126,6 +161,16 @@ namespace MyBackendApp.Controllers
             {
                 return Unauthorized(ex.Message);
             }
+        }
+
+        private void LogObject(object obj)
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            var jsonString = JsonSerializer.Serialize(obj, options);
+            _logger.LogInformation($"Serialized Object: {jsonString}");
         }
 
         [HttpGet("{id}/tags")]
