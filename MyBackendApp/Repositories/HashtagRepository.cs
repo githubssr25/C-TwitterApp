@@ -64,13 +64,14 @@ public async Task<List<Tweet>> GetTweetsByHashtagAsync(string label)
     return tweets;
 }
 
-     public async Task<Hashtag?> GetHashtagByLabelAsync(string label)
+
+public async Task<Hashtag?> GetHashtagByLabelAsync(string label)
 {
     string hashtagLabel = "#" + label.Trim('#').Trim(); // Normalize and trim the label
     _logger.LogInformation($"Searching for hashtag: {hashtagLabel}");
 
     // Log each hashtag for debugging
-    var allHashtags = await _context.Hashtags.Include(h => h.Tweets).ToListAsync();
+    var allHashtags = await _context.Hashtags.Include(h => h.Tweets).ThenInclude(t => t.Author).ToListAsync();
     foreach (var hashtag in allHashtags)
     {
         _logger.LogInformation($"Hashtag: {hashtag.Label}");
@@ -78,6 +79,7 @@ public async Task<List<Tweet>> GetTweetsByHashtagAsync(string label)
 
     var hashtagResult = await _context.Hashtags
         .Include(h => h.Tweets)
+        .ThenInclude(t => t.Author) // Include the author
         .FirstOrDefaultAsync(h => EF.Functions.ILike(h.Label, hashtagLabel));
 
     if (hashtagResult == null)
@@ -91,6 +93,7 @@ public async Task<List<Tweet>> GetTweetsByHashtagAsync(string label)
 
     return hashtagResult;
 }
+
         public async Task<bool> CheckHashtagExistsAsync(string label)
         {
             string hashtagLabel = "#" + label;
