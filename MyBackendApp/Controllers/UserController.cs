@@ -130,5 +130,37 @@ public async Task<IActionResult> DeleteUser(string username, [FromBody] Credenti
     }
 }
 
+        [HttpPatch("{username}")]
+        public async Task<IActionResult> UpdateUser(string username, [FromBody] UserRequestDto userRequestDto)
+        {
+            _logger.LogInformation("6-21 updateUser request received with username: {username} and credentials: Username: {Username}, Password: {Password}", username, userRequestDto?.Credentials?.Username, userRequestDto?.Credentials?.Password);
+
+            if (userRequestDto == null || userRequestDto.Credentials == null || userRequestDto.Profile == null)
+            {
+                _logger.LogWarning("Invalid request body.");
+                return BadRequest("Invalid request body.");
+            }
+
+            try
+            {
+                var updatedUser = await _userService.UpdateUserAsync(username, userRequestDto.Credentials, userRequestDto.Profile);
+                return Ok(updatedUser);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid credentials.");
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("User not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
     }
 }

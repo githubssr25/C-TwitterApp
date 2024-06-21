@@ -196,6 +196,40 @@ public async Task<UserResponseDto?> DeleteUserAsync(string username, Credentials
     return _mapper.Map<UserResponseDto>(user);
 }
 
+public async Task<UserResponseDto?> UpdateUserAsync(string username, CredentialsDto credentialsDto, ProfileDto profileDto)
+        {
+            _logger.LogInformation("Updating user with username: {Username}", username);
+
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+            if (user == null)
+            {
+                _logger.LogWarning("User not found with username: {Username}", username);
+                throw new KeyNotFoundException("User not found");
+            }
+
+            if (user.Credentials.Username != credentialsDto.Username || user.Credentials.Password != credentialsDto.Password)
+            {
+                _logger.LogWarning("Invalid credentials for user: {Username}", username);
+                throw new UnauthorizedAccessException("Invalid credentials");
+            }
+
+            if (user.Deleted)
+            {
+                _logger.LogInformation("User is deleted: {Username}", username);
+                throw new KeyNotFoundException("User not found");
+            }
+
+            user.Profile.FirstName = profileDto.FirstName;
+            user.Profile.LastName = profileDto.LastName;
+            user.Profile.Email = profileDto.Email;
+            user.Profile.Phone = profileDto.Phone;
+
+            await _userRepository.UpdateUserAsync(user);
+
+            _logger.LogInformation("User updated: {Username}", username);
+            return _mapper.Map<UserResponseDto>(user);
+        }
+
 
 
     }

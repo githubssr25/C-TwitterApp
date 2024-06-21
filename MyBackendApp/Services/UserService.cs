@@ -18,6 +18,8 @@ namespace MyBackendApp.Services
 
          Task<List<UserResponseDto>> GetFollowingAsync(string username);
 
+          Task<UserResponseDto?> UpdateUserAsync(string username, CredentialsDto credentialsDto, ProfileDto profileDto); // Add this line
+
         Task<UserResponseDto?> DeleteUserAsync(string username, CredentialsDto credentialsDto);
     }
 }
