@@ -13,6 +13,8 @@ namespace MyBackendApp.Repositories
     Task<List<User>> GetAllUsersAsync();
     Task<User?> GetUserByUsernameAsync(string username);
     Task CreateUserAsync(User user);
+
+    Task<User?> GetUserByUsernameForDeleteAsync(string username); // Add this line
     Task UpdateUserAsync(User user);
     void Save(User user);
     Task<List<Tweet>> GetMentionsByUserIdAsync(int userId);
@@ -25,12 +27,14 @@ namespace MyBackendApp.Repositories
 }
 public class UserRepository : IUserRepository
 {
-    private readonly AppDbContext _context;
+     private readonly AppDbContext _context;
+        private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+        public UserRepository(AppDbContext context, ILogger<UserRepository> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
 
     public async Task<List<User>> GetAllUsersAsync()
     {
@@ -47,6 +51,55 @@ public class UserRepository : IUserRepository
             .Include(u => u.Tweets)
             .FirstOrDefaultAsync(u => u.Credentials.Username == username && !u.Deleted);
     }
+
+public async Task<User?> GetUserByUsernameForDeleteAsync(string username)
+{
+    _logger.LogInformation("Querying user for delete with username: {Username}", username);
+
+    username = username.Trim(); // Trim the username string
+
+    var users = await _context.Users
+        .Include(u => u.Credentials)
+        .ToListAsync(); // Retrieve all users first
+
+    foreach (var user in users)
+    {
+        _logger.LogInformation("Checking user: {UserCredentialsUsername}", user.Credentials.Username);
+        _logger.LogInformation("Comparing '{UserCredentialsUsername}' with '{Username}'", user.Credentials.Username, username);
+        
+        if (string.Equals(user.Credentials.Username, username, StringComparison.OrdinalIgnoreCase) && !user.Deleted)
+        {
+            _logger.LogInformation("Match found for user: {UserCredentialsUsername}", user.Credentials.Username);
+            return user;
+        }
+    }
+
+    _logger.LogWarning("No user found for delete with username: {Username}", username);
+    return null;
+}
+
+
+
+
+//     public async Task<User?> GetUserByUsernameForDeleteAsync(string username)
+// {
+//     _logger.LogInformation("Querying user for delete with username: {Username}", username);
+//     var user = await _context.Users
+//         .Include(u => u.Credentials)
+//         .FirstOrDefaultAsync(u => u.Credentials.Username == username && !u.Deleted);
+
+//     if (user == null)
+//     {
+//         _logger.LogWarning("No user found for delete with username: {Username}", username);
+//     }
+//     else
+//     {
+//         _logger.LogInformation("User found for delete with username: {Username}", username);
+//     }
+
+//     return user;
+// }
+
 
     public async Task CreateUserAsync(User user)
     {

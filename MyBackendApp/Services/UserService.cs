@@ -17,5 +17,7 @@ namespace MyBackendApp.Services
         Task<List<UserResponseDto>> GetFollowersAsync(string username);
 
          Task<List<UserResponseDto>> GetFollowingAsync(string username);
+
+        Task<UserResponseDto?> DeleteUserAsync(string username, CredentialsDto credentialsDto);
     }
 }

@@ -9,15 +9,17 @@ using MyBackendApp.Repositories;
 
 namespace MyBackendApp.Services
 {
-    public class UserServiceImpl : IUserService
+      public class UserServiceImpl : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<UserServiceImpl> _logger;
 
-        public UserServiceImpl(IUserRepository userRepository, IMapper mapper)
+        public UserServiceImpl(IUserRepository userRepository, IMapper mapper, ILogger<UserServiceImpl> logger)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<UserResponseDto>> GetAllUsersAsync()
@@ -164,6 +166,37 @@ namespace MyBackendApp.Services
             var feed = await _userRepository.GetFeedByUserIdAsync((int)user.Id);
             return _mapper.Map<List<TweetResponseDto>>(feed);
         }
+
+public async Task<UserResponseDto?> DeleteUserAsync(string username, CredentialsDto credentialsDto)
+{
+    _logger.LogInformation("in userServiceImpl we have deleteUserAsync 6-21 request received with username: {username} and credentials: Username: {Username}, Password: {Password}", username, credentialsDto?.Username, credentialsDto?.Password);
+
+    var user = await _userRepository.GetUserByUsernameForDeleteAsync(username); // Use the new method
+    if (user == null)
+    {
+        _logger.LogWarning("User not found with username: {Username}", username);
+        throw new KeyNotFoundException("User not found");
+    }
+
+    if (user.Credentials.Username != credentialsDto.Username || user.Credentials.Password != credentialsDto.Password)
+    {
+        _logger.LogWarning("Invalid credentials for user: {Username}", username);
+        throw new UnauthorizedAccessException("Invalid credentials");
+    }
+
+    if (user.Deleted)
+    {
+        _logger.LogInformation("User already deleted: {Username}", username);
+        return null;
+    }
+
+    user.Deleted = true;
+    await _userRepository.UpdateUserAsync(user);
+    _logger.LogInformation("User marked as deleted: {Username}", username);
+    return _mapper.Map<UserResponseDto>(user);
+}
+
+
 
     }
 }

@@ -12,9 +12,12 @@ namespace MyBackendApp.Controllers
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
+         private readonly ILogger<TweetServiceImpl> _logger;
+
+        public UserController(IUserService userService, ILogger<TweetServiceImpl> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -92,5 +95,40 @@ namespace MyBackendApp.Controllers
             var feed = await _userService.GetFeedAsync(username);
             return Ok(feed);
         }
+
+
+ [HttpDelete("{username}")]
+public async Task<IActionResult> DeleteUser(string username, [FromBody] CredentialsDto credentialsDto)
+{
+    _logger.LogInformation("6-21 deleteUser request received with username: {username} and credentials: Username: {Username}, Password: {Password}", username, credentialsDto?.Username, credentialsDto?.Password);
+
+    if (credentialsDto == null)
+    {
+        _logger.LogWarning("CredentialsDto is null.");
+        return BadRequest("Invalid request body.");
+    }
+
+    try
+    {
+        var deletedUser = await _userService.DeleteUserAsync(username, credentialsDto);
+        if (deletedUser == null)
+            return NotFound("User not found or already deleted.");
+
+        return Ok(deletedUser);
+    }
+    catch (UnauthorizedAccessException)
+    {
+        return Unauthorized("Invalid credentials.");
+    }
+    catch (KeyNotFoundException)
+    {
+        return NotFound("User not found.");
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+    }
+}
+
     }
 }
